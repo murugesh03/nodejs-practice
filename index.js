@@ -1,8 +1,26 @@
+const helmet = require('helmet');
+const morgan = require('morgan');
 const Joi = require('joi');
 const express = require('express');
 const { Schema } = require('mongoose');
+const logger = require('./logger');
+const authenticate = require('./authenticate');
 const app = express();
+
 app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static('public'));
+
+app.use(logger);
+
+app.use(helmet());
+
+app.use(morgan());
+
+app.use(authenticate);
+
 // app.use(express.urlencoded({ extended: true }));
 const port = process.env.PORT || 2000;
 // var bodyParser = require('body-parser');
@@ -35,8 +53,7 @@ app.post('/api/courses', (req, res) => {
     return;
   }
 
-  console.log(result);
-  console.log(req.body, 'this si requiest');
+  console.log(req.body, 'this is request');
   const course = { id: courses.length + 1, name: req.body.name };
   courses.push(course);
   res.send(course);
