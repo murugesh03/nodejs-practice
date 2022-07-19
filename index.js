@@ -1,3 +1,7 @@
+require('dotenv').config();
+const startupDebugger = require('debug')('app:startup');
+const dbDebugger = require('debug')('app:db');
+const config = require('config');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const Joi = require('joi');
@@ -17,8 +21,16 @@ app.use(logger);
 
 app.use(helmet());
 
-app.use(morgan());
+//Configuration
+console.log(`Application Name : ${config.get('name')}`);
+console.log(`Mail Server : ${config.get('mail.host')}`);
+console.log(`Mail Password : ${config.get('mail.password')}`);
 
+if (app.get('env') === 'development') {
+  app.use(morgan('tiny'));
+  startupDebugger('Morgan is running..');
+}
+dbDebugger('Db connected');
 app.use(authenticate);
 
 // app.use(express.urlencoded({ extended: true }));
